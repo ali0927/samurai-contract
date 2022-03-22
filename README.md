@@ -1,5 +1,18 @@
 # Shogun Samurai NFT
 
+## Contract Addresses
+
+ShogunSamurais:
+https://etherscan.io/address/0x8399d6351fd0ddb33f77bfc627e3264d74500d22
+
+Shogun Token:
+Proxy: https://etherscan.io/address/0xf9abaeec0334fd30804446db7423abe0c02ef47d
+Implementation: https://etherscan.io/address/0x8949dad04f5f78425df67720849668c5a10fb10f#code
+
+Shogun Staking:
+Proxy: https://etherscan.io/address/0xc4f4811a854b60f7b35c8e46c4f2ebfdd035bed1
+Implementation: https://etherscan.io/address/0xc564ad6cf96bea48df5e44c11c08ec7e6f0bfb75#code
+
 </br>
 Presale: 16 October 0800 SGT
  </br>

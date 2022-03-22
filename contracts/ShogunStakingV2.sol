@@ -66,6 +66,7 @@ contract ShogunStakingV2 is
     uint256 public shogunBonus;
     mapping(uint256 => bool) public isLegendarySamurai;
     mapping(address => uint256) public medallionCount;
+    uint256 public startDate;
 
     bytes public guilds;
 
@@ -122,6 +123,7 @@ contract ShogunStakingV2 is
         medallionMultiplier = 10;
         shogunBonus = 800; // 8% for shogun bonus
         timescale = 1 days;
+        startDate = block.timestamp;
     }
 
     // ------------------------- USER FUNCTION ---------------------------
@@ -203,53 +205,20 @@ contract ShogunStakingV2 is
     }
 
     /// @dev Claim SHO reward for given family Id
-    function claimRewards(uint256 familyId) public nonReentrant {
-        require(trainingEnabled, "ShogunStaking: Training is disabled!");
-        Family storage family = families[familyId];
-        address familyOwner = family.familyOwner;
-        require(
-            msg.sender == familyOwner || msg.sender == unstaker,
-            "ShogunStaking: Only family owner can claim SHO"
-        );
-        require(
-            family.trainState == TrainState.IN_PROGRESS,
-            "ShogunStaking: Training has already ended!"
-        );
-        uint256 rewards = calculateRewards(familyId);
-        SHO.mint(familyOwner, rewards); // change
-        family.lastClaim = block.timestamp;
-        emit RewardClaimed(msg.sender, rewards, block.timestamp);
-    }
-
-    /// @dev QOL to claim all rewards
-    function claimAllRewards() public nonReentrant {
-        uint256[] memory familyIds = getUserFamilies(msg.sender);
-        uint256 totalRewards = 0;
-        Family storage train;
-
-        for (uint256 i = 0; i < familyIds.length; i++) {
-            totalRewards = totalRewards.add(calculateRewards(familyIds[i]));
-            train = families[familyIds[i]];
-            train.lastClaim = block.timestamp;
-        }
-        SHO.mint(msg.sender, totalRewards);
-        emit RewardClaimed(msg.sender, totalRewards, block.timestamp);
-    }
-
-    function claimRewardsV2(uint256 tokenId) public nonReentrant {
+    function claimRewards(uint256 tokenId) public nonReentrant {
         // check if token belongs to owner
         require(
             SS.ownerOf(tokenId) == msg.sender,
             "ShogunStaking: Claimant is not the owner!"
         );
 
-        uint256 rewards = calculateRewardsV2(tokenId);
+        uint256 rewards = calculateRewards(tokenId);
         lastClaim[tokenId] = block.timestamp;
 
         SHO.mint(msg.sender, rewards);
     }
 
-    function claimRewardsMultiV2() public nonReentrant {
+    function claimRewardsMulti() public nonReentrant {
         uint256[] memory tokenIds = SS.walletOfOwner(msg.sender);
         uint256 totalRewards = 0;
         for (uint256 i; i < tokenIds.length; i++) {
@@ -259,7 +228,7 @@ contract ShogunStakingV2 is
                 SS.ownerOf(tokenIds[i]) == msg.sender,
                 "ShogunStaking: Claimant is not the owner!"
             );
-            totalRewards += calculateRewardsV2(tokenIds[i]);
+            totalRewards += calculateRewards(tokenIds[i]);
             lastClaim[tokenIds[i]] = block.timestamp;
         }
 
@@ -380,32 +349,14 @@ contract ShogunStakingV2 is
     }
 
     /// @dev Caluclate rewards for given Family Id
-    function calculateRewards(uint256 trainId)
-        public
-        view
-        returns (uint256 rewardAmount)
-    {
-        Family memory family = families[trainId];
-        rewardAmount = baseReward
-            .mul(block.timestamp.sub(family.lastClaim))
-            .mul(family.shogunIds.length)
-            .mul(
-                (family.guildMultiplier).add(family.medallionMultiplier).add(
-                    family.shogunBonus
-                )
-            )
-            .div(timescale)
-            .div(10000);
-    }
-
-    function calculateRewardsV2(uint256 tokenId)
+    function calculateRewards(uint256 tokenId)
         public
         view
         returns (uint256 rewardAmount)
     {
         uint256 userLastClaim = lastClaim[tokenId];
-        if (userLastClaim < 1645797600) {
-            userLastClaim = 1645797600;
+        if (userLastClaim < startDate) {
+            userLastClaim = startDate;
         }
 
         if (isLegendarySamurai[tokenId] == true) {
@@ -419,13 +370,13 @@ contract ShogunStakingV2 is
         }
     }
 
-    function calculateRewardsMultiV2(uint256[] memory tokenIds)
+    function calculateRewardsMulti(uint256[] memory tokenIds)
         public
         view
         returns (uint256 rewardAmount)
     {
         for (uint256 i; i < tokenIds.length; i++) {
-            rewardAmount += calculateRewardsV2(tokenIds[i]);
+            rewardAmount += calculateRewards(tokenIds[i]);
         }
     }
 
