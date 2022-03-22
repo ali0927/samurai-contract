@@ -1,0 +1,17 @@
+node_modules
+
+#Hardhat files
+cache
+artifacts
+examples
+
+subgraph
+
+node_modules
+.env
+deploy_args.js
+*.DS_Store*
+snapshot.json
+data
+
+deployments/localhost
