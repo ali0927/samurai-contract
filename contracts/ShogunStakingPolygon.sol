@@ -26,7 +26,7 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
     event SubmitRequest(bytes32 requestId, address indexed owner, uint256[] tokenIds);
     event Claim(uint256[] tokenIds, uint256 amount);
 
-    function __ShogunStaking_init(
+    function __ShogunStakingPolygon_init(
         address _admin,
         address _SHO
     ) public initializer {
