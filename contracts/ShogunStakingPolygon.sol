@@ -18,12 +18,13 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
 
     struct ClaimRequest {
         address staker;
-        uint256 nftId;
+        uint256[] nftIds;
     }
     mapping(bytes32 => ClaimRequest) public requests;
 
-    event SubmitRequest(bytes32 requestId, address indexed owner, uint256 indexed tokenId);
-    event Claim(uint256 indexed tokenId, uint256 amount);
+    //events
+    event SubmitRequest(bytes32 requestId, address indexed owner, uint256[] tokenIds);
+    event Claim(uint256[] tokenIds, uint256 amount);
 
     function __ShogunStaking_init(
         address _admin,
@@ -39,33 +40,47 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
         startDate = block.timestamp;
     }
 
+    /// @dev emit event to verify claim request
     function _submitRequest(
-        uint256 _tokenId, 
+        uint256[] memory _tokenIds, 
         address _account
     ) private returns (bytes32) {
-        bytes32 requestId = keccak256(abi.encodePacked(_account, _tokenId, block.timestamp));
+        bytes32 requestId = keccak256(abi.encodePacked(_account, block.timestamp));
         requests[requestId] = ClaimRequest(
-            msg.sender,
-            _tokenId
+            _account,
+            _tokenIds
         );
 
-        emit SubmitRequest(requestId, msg.sender, _tokenId);
+        emit SubmitRequest(requestId, _account, _tokenIds);
         return requestId;
     }
 
+    /// @dev Claim SHO reward for verified request
     function confirmRequest(bytes32 _requestId) external onlyRole(DEFAULT_ADMIN_ROLE) {
         ClaimRequest memory req = requests[_requestId];
-        uint256 reward = calculateRewards(req.nftId);
+        uint256[] memory tokenIds = req.nftIds;
+        uint256 reward = calculateRewards(tokenIds);
 
         // TODO check `safeTranserFrom` 
         SHO.safeTransfer(req.staker, reward);
-        claimedTimes[req.nftId] = block.timestamp;
+
+        for (uint256 i; i < tokenIds.length; i++) {
+            claimedTimes[tokenIds[i]] = block.timestamp;
+        }
+
         delete requests[_requestId];
 
-        emit Claim(req.nftId, reward);
+        emit Claim(tokenIds, reward);
     }
 
-    function calculateRewards(uint256 _tokenId) public view returns (uint256) {
+    /// @dev Caluclate rewards for given token Ids
+    function calculateRewards(uint256[] memory tokenIds) public view returns (uint256 rewardAmount) {
+        for (uint256 i; i < tokenIds.length; i++) {
+            rewardAmount += calculateRewardByTokenId(tokenIds[i]);
+        }
+    }
+
+    function calculateRewardByTokenId(uint256 _tokenId) public view returns (uint256) {
         uint256 userLastClaim = claimedTimes[_tokenId];
         if (userLastClaim < startDate) {
             userLastClaim = startDate;
@@ -74,11 +89,11 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
         return (block.timestamp - userLastClaim) / 1 days;
     }
 
-    function claimRewards(uint256 _tokenId) external {
-        _submitRequest(_tokenId, msg.sender);
+    function claimRewards(uint256[] memory _tokenIds) external {
+        _submitRequest(_tokenIds, msg.sender);
     }
 
-     function setSHOToken(address _sho) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setSHOToken(address _sho) public onlyRole(DEFAULT_ADMIN_ROLE) {
         SHO = IShogunToken(_sho);
     }
 }
