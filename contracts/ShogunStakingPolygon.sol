@@ -21,6 +21,7 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
         uint256[] nftIds;
     }
     mapping(bytes32 => ClaimRequest) public requests;
+    mapping(address => uint256) public nonces;
 
     //events
     event SubmitRequest(bytes32 requestId, address indexed owner, uint256[] tokenIds);
@@ -45,7 +46,7 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
         uint256[] memory _tokenIds, 
         address _account
     ) private returns (bytes32) {
-        bytes32 requestId = keccak256(abi.encodePacked(_account, block.timestamp));
+        bytes32 requestId = keccak256(abi.encodePacked(_account, _tokenIds, ++nonces[msg.sender]));
         requests[requestId] = ClaimRequest(
             _account,
             _tokenIds
@@ -86,7 +87,7 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
             userLastClaim = startDate;
         }
         // TODO check offset
-        return (block.timestamp - userLastClaim) / 1 days;
+        return (block.timestamp - userLastClaim) / 1 hours * 10 ** 18 / 24;
     }
 
     function claimRewards(uint256[] memory _tokenIds) external {
@@ -95,5 +96,9 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
 
     function setSHOToken(address _sho) public onlyRole(DEFAULT_ADMIN_ROLE) {
         SHO = IShogunToken(_sho);
+    }
+
+    function returnTime() external view returns (uint256) {
+        return block.timestamp;
     }
 }

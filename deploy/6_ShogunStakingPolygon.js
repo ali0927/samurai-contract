@@ -37,4 +37,4 @@ module.exports = async ({
 
 };
 
-module.exports.tags = ["ShogunStakingV2"];
+module.exports.tags = ["ShogunStakingPolygon"];

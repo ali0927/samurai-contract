@@ -117,6 +117,24 @@ class GasLogger {
   };
 }
 
+class Time {
+  static seconds = (val) => {
+    return val;
+  }
+  static minutes = (val) => {
+      return val * this.seconds(60);
+  }
+  static hours = (val) => {
+      return val * this.minutes(60);
+  }
+  static days = (val) => {
+      return val * this.hours(24);
+  }
+  static months = (val) => {
+      return val * days(31);
+  } 
+}
 module.exports = {
   GasLogger,
+  Time
 };
