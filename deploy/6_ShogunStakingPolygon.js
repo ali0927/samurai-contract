@@ -15,16 +15,16 @@ module.exports = async ({
     const { deployer, adminAddress, collectionOwner } = await getNamedAccounts();
     const [owner] = await ethers.getSigners();
 
-    let mockToken = await ethers.getContract("MockSho", owner);
+    let mockToken = await ethers.getContract("MockSho", deployer);
 
     console.log(`Deploying ShogunStakingPolygon... from ${deployer}`);
 
     let shogunStaking = await deploy("ShogunStakingPolygon", {
         from: deployer,
         proxy: {
-        owner: deployer,
-        proxyContract: "OptimizedTransparentProxy",
-        execute: {
+          owner: deployer,
+          proxyContract: "OptimizedTransparentProxy",
+          execute: {
             init: {
             methodName: "__ShogunStakingPolygon_init",
             args: [deployer, mockToken.address],

@@ -67,6 +67,7 @@ module.exports = {
     },
     mumbai: {
       url: `https://rpc-mumbai.maticvigil.com`,
+      chainId: 80001,
       accounts: [process.env.PRIVATE_KEY]
     },
   },
@@ -76,6 +77,7 @@ module.exports = {
   namedAccounts: {
     deployer: {
       default: 0, // here this will by default take the first account as deployer
+      80001: "0x0902CB364E49101F4ab5D4fFDE5035973e728D3F"
     },
     treasury: {
       default: 0,
