@@ -77,12 +77,13 @@ module.exports = {
   namedAccounts: {
     deployer: {
       default: 0, // here this will by default take the first account as deployer
-      80001: "0x0902CB364E49101F4ab5D4fFDE5035973e728D3F"
+      80001: "0x0902CB364E49101F4ab5D4fFDE5035973e728D3F",
+      4: "0x0902CB364E49101F4ab5D4fFDE5035973e728D3F"
     },
     treasury: {
       default: 0,
       1: "0x9115eD5a96E881F12868E83d0C5A18444E22c063",
-      4: "0x9115eD5a96E881F12868E83d0C5A18444E22c063",
+      4: "0x0902CB364E49101F4ab5D4fFDE5035973e728D3F",
     },
   },
 };

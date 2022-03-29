@@ -81,7 +81,7 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
         }
     }
 
-    function calculateRewardByTokenId(uint256 _tokenId) public view returns (uint256) {
+    function calculateRewardByTokenId(uint256 _tokenId) private view returns (uint256) {
         uint256 userLastClaim = claimedTimes[_tokenId];
         if (userLastClaim < startDate) {
             userLastClaim = startDate;
@@ -98,7 +98,4 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
         SHO = IShogunToken(_sho);
     }
 
-    function returnTime() external view returns (uint256) {
-        return block.timestamp;
-    }
 }
