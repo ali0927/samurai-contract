@@ -57,7 +57,7 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
     }
 
     /// @dev Claim SHO reward for verified request
-    function confirmRequest(bytes32 _requestId) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function confirmRequest(bytes32 _requestId) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
         ClaimRequest memory req = requests[_requestId];
         uint256[] memory tokenIds = req.nftIds;
         uint256 reward = calculateRewards(tokenIds);
@@ -90,7 +90,7 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
         return (block.timestamp - userLastClaim) / 1 hours * 10 ** 18 / 24;
     }
 
-    function claimRewards(uint256[] memory _tokenIds) external {
+    function claimRewards(uint256[] memory _tokenIds) external nonReentrant {
         _submitRequest(_tokenIds, msg.sender);
     }
 

@@ -15,7 +15,8 @@ describe("ShogunStakingPolygon", function () {
     this.shoToken = await ethers.getContract("MockSho", this.owner);
     this.shogunStakingPolygon = await ethers.getContract("ShogunStakingPolygon", this.owner);
 
-    await this.shoToken.mint(this.owner.address, 1000);
+    await this.shoToken.mint(this.shogunStakingPolygon.address, ethers.utils.parseEther("100"));
+    await this.shogunStakingPolygon.setSHOToken(this.shoToken.address);
   });
 
   it("Calculate Rewards", async function () {
@@ -45,6 +46,18 @@ describe("ShogunStakingPolygon", function () {
     const requestId = ethers.utils.solidityKeccak256(["string", "uint256[]", "uint256"], [this.alice.address, [0, 1], 1]);
     await expect(this.shogunStakingPolygon.connect(this.alice).confirmRequest(requestId))
       .to.reverted;
+  });
+
+  it("Confirm Request", async function() {
+    let tx = await this.shogunStakingPolygon.claimRewards([0, 1]);
+    let rc = await tx.wait();
+    const rewards = await this.shogunStakingPolygon.calculateRewards([0, 1]);
+    const submitRequestEvent = rc.events.find(e => e.event === 'SubmitRequest');
+    const requestId = submitRequestEvent.args.requestId;
+    tx = await this.shogunStakingPolygon.confirmRequest(requestId);
+    rc = await tx.wait();
+    const balance = await this.shoToken.balanceOf(this.owner.address);
+    expect(balance).to.eq(rewards);
   });
 
 });
