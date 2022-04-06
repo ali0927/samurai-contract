@@ -7,7 +7,10 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "./interfaces/IShogunToken.sol";
 
-contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgradeable { 
+contract ShogunStakingPolygon is
+    AccessControlUpgradeable,
+    ReentrancyGuardUpgradeable
+{
     using SafeERC20 for IShogunToken;
 
     IShogunToken public SHO;
@@ -26,7 +29,11 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
     bytes32 public constant CONTROLLER_ROLE = keccak256("CONTROLLER_ROLE");
 
     //events
-    event SubmitRequest(bytes32 requestId, address indexed owner, uint256[] tokenIds);
+    event SubmitRequest(
+        bytes32 requestId,
+        address indexed owner,
+        uint256[] tokenIds
+    );
     event Claim(uint256[] tokenIds, uint256 amount);
 
     function __ShogunStakingPolygon_init(
@@ -39,33 +46,35 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
 
         // Constructor init
         _setupRole(DEFAULT_ADMIN_ROLE, _gnosisAdmin); // To revoke access after functions are set
-        _setupRole(CONTROLLER_ROLE, _controller)
+        _setupRole(CONTROLLER_ROLE, _controller);
         SHO = IShogunToken(_SHO);
         startDate = block.timestamp;
     }
 
     /// @dev emit event to verify claim request
-    function _submitRequest(
-        uint256[] memory _tokenIds, 
-        address _account
-    ) private returns (bytes32) {
-        bytes32 requestId = keccak256(abi.encodePacked(_account, _tokenIds, ++nonces[msg.sender]));
-        requests[requestId] = ClaimRequest(
-            _account,
-            _tokenIds
+    function _submitRequest(uint256[] memory _tokenIds, address _account)
+        private
+        returns (bytes32)
+    {
+        bytes32 requestId = keccak256(
+            abi.encodePacked(_account, _tokenIds, ++nonces[msg.sender])
         );
+        requests[requestId] = ClaimRequest(_account, _tokenIds);
 
         emit SubmitRequest(requestId, _account, _tokenIds);
         return requestId;
     }
 
     /// @dev Claim SHO reward for verified request
-    function confirmRequest(bytes32 _requestId) external onlyRole(CONTROLLER_ROLE) nonReentrant {
+    function confirmRequest(bytes32 _requestId)
+        external
+        onlyRole(CONTROLLER_ROLE)
+        nonReentrant
+    {
         ClaimRequest memory req = requests[_requestId];
         uint256[] memory tokenIds = req.nftIds;
         uint256 reward = calculateRewards(tokenIds);
 
-        // TODO check `safeTranserFrom` 
         SHO.safeTransfer(req.staker, reward);
 
         for (uint256 i; i < tokenIds.length; i++) {
@@ -78,19 +87,26 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
     }
 
     /// @dev Caluclate rewards for given token Ids
-    function calculateRewards(uint256[] memory tokenIds) public view returns (uint256 rewardAmount) {
+    function calculateRewards(uint256[] memory tokenIds)
+        public
+        view
+        returns (uint256 rewardAmount)
+    {
         for (uint256 i; i < tokenIds.length; i++) {
             rewardAmount += calculateRewardByTokenId(tokenIds[i]);
         }
     }
 
-    function calculateRewardByTokenId(uint256 _tokenId) private view returns (uint256) {
+    function calculateRewardByTokenId(uint256 _tokenId)
+        private
+        view
+        returns (uint256)
+    {
         uint256 userLastClaim = claimedTimes[_tokenId];
         if (userLastClaim < startDate) {
             userLastClaim = startDate;
         }
-        // TODO check offset
-        return (block.timestamp - userLastClaim) / 1 hours * 10 ** 18 / 24;
+        return (((block.timestamp - userLastClaim) / 1 hours) * 10**18) / 24;
     }
 
     function claimRewards(uint256[] memory _tokenIds) external nonReentrant {
@@ -100,5 +116,4 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
     function setSHOToken(address _sho) public onlyRole(DEFAULT_ADMIN_ROLE) {
         SHO = IShogunToken(_sho);
     }
-
 }
