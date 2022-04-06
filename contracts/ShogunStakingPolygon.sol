@@ -23,20 +23,23 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
     mapping(bytes32 => ClaimRequest) public requests;
     mapping(address => uint256) public nonces;
 
+    bytes32 public constant MINTER_ROLE = keccak256("CONTROLLER_ROLE");
+
     //events
     event SubmitRequest(bytes32 requestId, address indexed owner, uint256[] tokenIds);
     event Claim(uint256[] tokenIds, uint256 amount);
 
     function __ShogunStakingPolygon_init(
-        address _admin,
+        address _gnosisAdmin,
+        address _controller,
         address _SHO
     ) public initializer {
         __AccessControl_init();
         __ReentrancyGuard_init();
 
         // Constructor init
-        _setupRole(DEFAULT_ADMIN_ROLE, _admin); // To revoke access after functions are set
-
+        _setupRole(DEFAULT_ADMIN_ROLE, _gnosisAdmin); // To revoke access after functions are set
+        _setupRole(CONTROLLER_ROLE, _controller)
         SHO = IShogunToken(_SHO);
         startDate = block.timestamp;
     }
@@ -57,7 +60,7 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
     }
 
     /// @dev Claim SHO reward for verified request
-    function confirmRequest(bytes32 _requestId) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
+    function confirmRequest(bytes32 _requestId) external onlyRole(CONTROLLER_ROLE) nonReentrant {
         ClaimRequest memory req = requests[_requestId];
         uint256[] memory tokenIds = req.nftIds;
         uint256 reward = calculateRewards(tokenIds);
