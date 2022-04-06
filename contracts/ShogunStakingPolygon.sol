@@ -23,7 +23,7 @@ contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgrad
     mapping(bytes32 => ClaimRequest) public requests;
     mapping(address => uint256) public nonces;
 
-    bytes32 public constant MINTER_ROLE = keccak256("CONTROLLER_ROLE");
+    bytes32 public constant CONTROLLER_ROLE = keccak256("CONTROLLER_ROLE");
 
     //events
     event SubmitRequest(bytes32 requestId, address indexed owner, uint256[] tokenIds);

@@ -27,7 +27,7 @@ module.exports = async ({
           execute: {
             init: {
             methodName: "__ShogunStakingPolygon_init",
-            args: [deployer, mockToken.address],
+            args: [deployer, deployer, mockToken.address],
             }
         },
     },
