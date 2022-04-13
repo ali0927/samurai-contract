@@ -1,7 +1,8 @@
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0 <0.9.0;
 
 
-// SPDX-License-Identifier: MIT
+
 // OpenZeppelin Contracts v4.4.1 (access/IAccessControl.sol)
 /**
  * @dev External interface of AccessControl declared to support ERC165 detection.
@@ -87,7 +88,7 @@ interface IAccessControlUpgradeable {
     function renounceRole(bytes32 role, address account) external;
 }
 
-// SPDX-License-Identifier: MIT
+
 // OpenZeppelin Contracts (last updated v4.5.0) (utils/Address.sol)
 /**
  * @dev Collection of functions related to the address type
@@ -280,7 +281,7 @@ library AddressUpgradeable {
     }
 }
 
-// SPDX-License-Identifier: MIT
+
 // OpenZeppelin Contracts (last updated v4.5.0) (proxy/utils/Initializable.sol)
 /**
  * @dev This is a base contract to aid in writing upgradeable contracts, or any kind of contract that will be deployed
@@ -356,7 +357,7 @@ abstract contract Initializable {
     }
 }
 
-// SPDX-License-Identifier: MIT
+
 // OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
 /**
  * @dev Provides information about the current execution context, including the
@@ -390,7 +391,7 @@ abstract contract ContextUpgradeable is Initializable {
     uint256[50] private __gap;
 }
 
-// SPDX-License-Identifier: MIT
+
 // OpenZeppelin Contracts v4.4.1 (utils/Strings.sol)
 /**
  * @dev String operations.
@@ -455,7 +456,7 @@ library StringsUpgradeable {
     }
 }
 
-// SPDX-License-Identifier: MIT
+
 // OpenZeppelin Contracts v4.4.1 (utils/introspection/IERC165.sol)
 /**
  * @dev Interface of the ERC165 standard, as defined in the
@@ -478,7 +479,7 @@ interface IERC165Upgradeable {
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
 
-// SPDX-License-Identifier: MIT
+
 // OpenZeppelin Contracts v4.4.1 (utils/introspection/ERC165.sol)
 /**
  * @dev Implementation of the {IERC165} interface.
@@ -515,7 +516,7 @@ abstract contract ERC165Upgradeable is Initializable, IERC165Upgradeable {
     uint256[50] private __gap;
 }
 
-// SPDX-License-Identifier: MIT
+
 // OpenZeppelin Contracts (last updated v4.5.0) (access/AccessControl.sol)
 /**
  * @dev Contract module that allows children to implement role-based access
@@ -743,7 +744,7 @@ abstract contract AccessControlUpgradeable is Initializable, ContextUpgradeable,
     uint256[49] private __gap;
 }
 
-// SPDX-License-Identifier: MIT
+
 // OpenZeppelin Contracts v4.4.1 (security/ReentrancyGuard.sol)
 /**
  * @dev Contract module that helps prevent reentrant calls to a function.
@@ -815,7 +816,7 @@ abstract contract ReentrancyGuardUpgradeable is Initializable {
     uint256[49] private __gap;
 }
 
-// SPDX-License-Identifier: MIT
+
 // OpenZeppelin Contracts (last updated v4.5.0) (token/ERC20/IERC20.sol)
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
@@ -895,7 +896,7 @@ interface IERC20 {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
-// SPDX-License-Identifier: MIT
+
 // OpenZeppelin Contracts (last updated v4.5.0) (utils/Address.sol)
 /**
  * @dev Collection of functions related to the address type
@@ -1115,7 +1116,7 @@ library Address {
     }
 }
 
-// SPDX-License-Identifier: MIT
+
 // OpenZeppelin Contracts v4.4.1 (token/ERC20/utils/SafeERC20.sol)
 /**
  * @title SafeERC20
@@ -1209,7 +1210,6 @@ library SafeERC20 {
     }
 }
 
-//SPDX-License-Identifier: MIT
 interface IShogunToken is IERC20 {
     function updateRewardOnMint(address _user, uint256 _amount) external;
 
@@ -1224,7 +1224,7 @@ interface IShogunToken is IERC20 {
     function getTotalClaimable(address _user) external view returns (uint256);
 }
 
-// SPDX-License-Identifier: MIT
+
 contract ShogunStakingPolygon is AccessControlUpgradeable, ReentrancyGuardUpgradeable { 
     using SafeERC20 for IShogunToken;
 

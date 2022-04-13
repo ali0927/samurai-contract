@@ -40,7 +40,7 @@ contract ShogunStakingPolygon is
         address _gnosisAdmin,
         address _controller,
         address _SHO,
-        uint256 _startTime,
+        uint256 _startTime
     ) public initializer {
         __AccessControl_init();
         __ReentrancyGuard_init();
