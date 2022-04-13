@@ -39,7 +39,8 @@ contract ShogunStakingPolygon is
     function __ShogunStakingPolygon_init(
         address _gnosisAdmin,
         address _controller,
-        address _SHO
+        address _SHO,
+        uint256 _startTime,
     ) public initializer {
         __AccessControl_init();
         __ReentrancyGuard_init();
@@ -48,7 +49,7 @@ contract ShogunStakingPolygon is
         _setupRole(DEFAULT_ADMIN_ROLE, _gnosisAdmin); // To revoke access after functions are set
         _setupRole(CONTROLLER_ROLE, _controller);
         SHO = IShogunToken(_SHO);
-        startDate = block.timestamp;
+        startDate = _startTime;
     }
 
     /// @dev emit event to verify claim request
@@ -73,13 +74,14 @@ contract ShogunStakingPolygon is
     {
         ClaimRequest memory req = requests[_requestId];
         uint256[] memory tokenIds = req.nftIds;
-        uint256 reward = calculateRewards(tokenIds);
-
-        SHO.safeTransfer(req.staker, reward);
+        uint256 reward;
 
         for (uint256 i; i < tokenIds.length; i++) {
+            reward += calculateRewardByTokenId(tokenIds[i]);
             claimedTimes[tokenIds[i]] = block.timestamp;
         }
+        
+        SHO.safeTransfer(req.staker, reward);
 
         delete requests[_requestId];
 
